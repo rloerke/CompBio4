@@ -3338,7 +3338,7 @@ name: enzymatic reaction
 def: "terms aiming to represent biochemical reactions referring to their resulting product modifications." [PMID:14755292]
 subset: PSI-MI_slim
 synonym: "Biochemical reaction" EXACT PSI-MI-alternate []
-is_a: MI:04 07! direct interaction
+is_a: MI:0407 ! direct interaction
 
 [Term]
 id: MI:0415

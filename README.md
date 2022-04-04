@@ -1,2 +1,3 @@
-# CompBio4
-Computational Biology Assignment 4
+#Comp Bio Assignment 4
+##Written by Ray Loerke
+BioGRID MITAB File Processor
