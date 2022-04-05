@@ -1,11 +1,11 @@
-#Total interactions processed:	994035
-#Total interactions in network:	128190	12.9%
-#Total proteins in network:	15084
-#Interspecies interactions discarded:	68485	6.89%
-#Non-physical interactions discarded:	750933	75.54%
-#Predicted interactions discarded:	9243	0.93%
-#Self-loops discarded:	4162	0.42%
-#Duplicate interactions discarded:	33022	3.32%
+#Interactions Read:	994035
+#Interactions Kept In Network:	128190	12.9%
+#Total Number of Proteins:	15084
+#Discarded Inter-Species:	68485	6.89%
+#Discarded Not Physical:	750933	75.54%
+#Discarded Not Experimental:	9243	0.93%
+#Discarded Self-Loop:	4162	0.42%
+#Discarded Duplicate:	33022	3.32%
 A1BG	ABCC6
 A1BG	ANXA7
 A1BG	CDKN1A

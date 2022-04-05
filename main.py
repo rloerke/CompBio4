@@ -17,11 +17,11 @@ def main():
     print(len(exp_set))
     """
 
-    process_biogrid_file("BIOGRID-ORGANISM-Homo_sapiens-4.4.207.mitab.txt", "network.txt")
+    process_biogrid_file("BIOGRID-ORGANISM-Homo_sapiens-4.4.207.mitab.txt", "H_Sapiens_BioGRID_network.txt")
 
 
 def get_physical_interaction_codes(code_list):
-    return mio_helper(code_list, 915, set())
+    return mio_helper(code_list, 407, set())
 
 
 def get_experimental_codes(code_list):
@@ -89,6 +89,7 @@ def process_biogrid_file(filename, path):
     discarded_self_loop = 0
 
     interactions = set()
+    proteins = set()
     valid = True
     header = True
 
@@ -104,6 +105,8 @@ def process_biogrid_file(filename, path):
         else:
             interactions_read += 1
             line_list = line.split('\t')
+            id_a_list = line_list[2].split('|')
+            id_b_list = line_list[3].split('|')
 
             if line_list[9] != "taxid:9606" or line_list[10] != "taxid:9606":
                 discarded_inter_species += 1
@@ -121,32 +124,50 @@ def process_biogrid_file(filename, path):
                 discarded_self_loop += 1
                 valid = False
 
-            id_a_list = line_list[2].split('|')
-            id_b_list = line_list[3].split('|')
+            elif (id_a_list[1][22:] + "\t" + id_b_list[1][22:]) in interactions:
+                discarded_duplicate += 1
+                valid = False
 
-            if (id_a_list[1][22:] + "\t" + id_b_list[1][22:]) in interactions:
+            elif (id_b_list[1][22:] + "\t" + id_a_list[1][22:]) in interactions:
                 discarded_duplicate += 1
                 valid = False
 
             if valid:
                 interactions_kept += 1
-                interactions.add(id_a_list[1][22:] + "\t" + id_b_list[1][22:])
+
+                if id_a_list[1][22:] < id_b_list[1][22:]:
+                    interactions.add(id_a_list[1][22:] + "\t" + id_b_list[1][22:])
+                else:
+                    interactions.add(id_b_list[1][22:] + "\t" + id_a_list[1][22:])
+
+                if not id_a_list[1][22:] in proteins:
+                    interactions_in_network += 1
+                    proteins.add(id_a_list[1][22:])
+
+                if not id_b_list[1][22:] in proteins:
+                    interactions_in_network += 1
+                    proteins.add(id_b_list[1][22:])
 
             valid = True
 
     bio.close()
 
-    print("\nInteractions Read: " + str(interactions_read))
-    print("Interactions Kept In Network: " + str(interactions_kept))
-    print("Total Interactors: " + str(interactions_in_network))
-    print("Discarded Inter-Species: " + str(discarded_inter_species))
-    print("Discarded Not Physical: " + str(discarded_physical))
-    print("Discarded Not Experimental: " + str(discarded_experimental))
-    print("Discarded Self-Loop: " + str(discarded_self_loop))
-    print("Discarded Duplicate: " + str(discarded_duplicate))
-
-    """
     out_string = ""
+
+    out_string += "#Interactions Read:\t" + str(interactions_read) + "\n"
+    out_string += "#Interactions Kept In Network:\t" + str(interactions_kept) + "\t" + \
+                  str(round(interactions_kept / interactions_read * 100, 2)) + "%" + "\n"
+    out_string += "#Total Number of Proteins:\t" + str(interactions_in_network) + "\n"
+    out_string += "#Discarded Inter-Species:\t" + str(discarded_inter_species) + "\t" + \
+                  str(round(discarded_inter_species / interactions_read * 100, 2)) + "%" + "\n"
+    out_string += "#Discarded Not Physical:\t" + str(discarded_physical) + "\t" + \
+                  str(round(discarded_physical / interactions_read * 100, 2)) + "%" + "\n"
+    out_string += "#Discarded Not Experimental:\t" + str(discarded_experimental) + "\t" + \
+                  str(round(discarded_experimental / interactions_read * 100, 2)) + "%" + "\n"
+    out_string += "#Discarded Self-Loop:\t" + str(discarded_self_loop) + "\t" + \
+                  str(round(discarded_self_loop / interactions_read * 100, 2)) + "%" + "\n"
+    out_string += "#Discarded Duplicate:\t" + str(discarded_duplicate) + "\t" + \
+                  str(round(discarded_duplicate / interactions_read * 100, 2)) + "%" + "\n"
 
     for item in sorted(interactions):
         out_string += item
@@ -157,7 +178,6 @@ def process_biogrid_file(filename, path):
     out_file.close()
     
     print("Network File Created!")
-    """
 
 
 main()
